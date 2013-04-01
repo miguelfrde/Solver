@@ -14,6 +14,14 @@ public class Block extends JPanel {
 	public static final boolean VERTICAL   = false;
 	private JLabel lbl;
 	
+	/**
+	 * Creates a block
+	 * @param x				The x coordinate where the block is.
+	 * @param y				The y coordinate where the block is.
+	 * @param length		The size of the block (2, 3 mainly).
+	 * @param orientation	The orientation of the block (Horizontal or Vertical).
+	 * @param c				The character associated to this block.
+	 */
 	public Block(int x, int y, int length, boolean orientation, char c) {
 		this.x = x;
 		this.y = y;
@@ -29,15 +37,30 @@ public class Block extends JPanel {
 		add(lbl);
 	}
 	
+	/**
+	 * Changes the block color.
+	 * @param color	The new color.
+	 */
 	public void setColor(Color color) {
 		setBackground(color);
 		lbl.setBackground(color);
 	}
 	
+	/**
+	 * Generates a random number r such that
+	 * 0 <= r <= 255
+	 * @return	Random number integer in range [0, 255]
+	 */
 	private int random() {
 		return (int)(Math.random() * 256);
 	}
 	
+	/**
+	 * Move block
+	 * @param Pixels to be moved (positive -> up, right,
+	 * 							  negative -> left, bottom)
+	 * @throws InterruptedException	Thread.sleep exception
+	 */
 	public void move(int d) throws InterruptedException {
 		if (orientation == HORIZONTAL)
 			for (int i = 0; i < d; i++) {

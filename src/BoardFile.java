@@ -10,6 +10,10 @@ public class BoardFile {
 	private File file;
 	private String name;
 	
+	/**
+	 * Creates a new BoardFile, that saves a .puzzle File.
+	 * @param f	.puzzle File
+	 */
 	public BoardFile(File f) {
 		file = f;
 		String[] nameParts = f.getName().split("-");
@@ -17,6 +21,9 @@ public class BoardFile {
 				Integer.parseInt(nameParts[1].substring(0,2));
 	}
 	
+	/**
+	 * @return File associated to this BoardFile object.
+	 */
 	public File file() {
 		return file;
 	}

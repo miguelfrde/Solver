@@ -26,6 +26,11 @@ public class BoardPanel extends JPanel {
 		blocks = null;
 	}
 	
+	/**
+	 * Loads a puzzle file
+	 * @param f	The BoardFile to load (.puzzle)
+	 * @throws FileNotFoundException	When the file to load doens't exist
+	 */
 	public void load(BoardFile f) throws FileNotFoundException {
 		if (blocks != null) for (Block b : blocks) b.setVisible(false);
 		Scanner in = new Scanner(f.file());
@@ -41,6 +46,12 @@ public class BoardPanel extends JPanel {
 		in.close();
 	}
 	
+	/**
+	 * Creates a Block, saves it and draws it.
+	 * @param c		Character that represents the block to be added.
+	 * @param text	The content of the file that is being loaded.
+	 * @param index	The index of the block to be added.
+	 */
 	private void addBlock(char c, String text, int index) {
 		ArrayList<Integer> indexes = new ArrayList<Integer>(3);
 		int i = -1;
@@ -54,9 +65,6 @@ public class BoardPanel extends JPanel {
 		this.add(blocks[index]);
 	}
 	
-	/**
-	 * Draw board and blocks.
-	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		for (int i = 15; i <= 615; i += 100) {
