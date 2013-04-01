@@ -7,14 +7,18 @@ import java.io.File;
  */
 public class BoardFile {
 	
-	File file;
-	String name;
+	private File file;
+	private String name;
 	
 	public BoardFile(File f) {
 		file = f;
 		String[] nameParts = f.getName().split("-");
 		name = nameParts[0] + " " +
 				Integer.parseInt(nameParts[1].substring(0,2));
+	}
+	
+	public File file() {
+		return file;
 	}
 	
 	public String toString() {

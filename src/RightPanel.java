@@ -1,7 +1,10 @@
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
@@ -66,6 +69,8 @@ public class RightPanel extends JPanel {
 		radioGroup.add(rbBFS);
 		radioGroup.add(rbDFS);
 		
+		cbPuzzles.addActionListener(new ComboBoxListener());
+		
 		add(cbPuzzles);
 		add(rbAStar);
 		add(rbBFS);
@@ -83,6 +88,17 @@ public class RightPanel extends JPanel {
 			if (Pattern.matches(".*(\\.puzzle)$", fileName))
 				cbPuzzles.addItem(new BoardFile(file));
 		}
+	}
+	
+	private class ComboBoxListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			try {
+				Shared.board.load((BoardFile)cbPuzzles.getSelectedItem());
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 	}
 
 }

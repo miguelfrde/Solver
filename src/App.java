@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 
 @SuppressWarnings("serial")
@@ -16,6 +17,7 @@ public class App extends JFrame {
 		setLayout(new BorderLayout());
 		
 		BoardPanel board		= new BoardPanel();
+		Shared.board = board;
 		RightPanel rightSidebar = new RightPanel();
 
 		getContentPane().add(rightSidebar, BorderLayout.EAST);
@@ -23,8 +25,11 @@ public class App extends JFrame {
 		setVisible(true);
 	}
 	
-	public static void main(String[] args) {
-		new App();
+	public static void main(String[] args) throws InterruptedException {
+		App app = new App();
+		Thread.sleep(1000);
+		Shared.board.blocks[0].move(200 + 1);
+		JOptionPane.showMessageDialog(null, "Done.");
 	}
 	
 }
