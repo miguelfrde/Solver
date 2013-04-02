@@ -59,8 +59,8 @@ public class BoardPanel extends JPanel {
 			indexes.add(i);
 		boolean orientation = (indexes.get(1) == indexes.get(0) + 1)?
 							  Block.HORIZONTAL : Block.VERTICAL;
-		int x = 100 * (indexes.get(0) % 6) + 15;
-		int y = 100 * (indexes.get(0) / 6) + 15;
+		int x = 100 * (indexes.get(0) % 6) + 15 + 1;
+		int y = 100 * (indexes.get(0) / 6) + 15 + 1;
 		blocks[index] = new Block(x, y, indexes.size(),orientation, c);
 		this.add(blocks[index]);
 	}

@@ -6,14 +6,14 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class Block extends JPanel {
-	
+
 	private int x, y;
 	private final int width, height;
 	private boolean orientation;
 	public static final boolean HORIZONTAL = true;
 	public static final boolean VERTICAL   = false;
 	private JLabel lbl;
-	
+
 	/**
 	 * Creates a block
 	 * @param x				The x coordinate where the block is.
@@ -26,17 +26,17 @@ public class Block extends JPanel {
 		this.x = x;
 		this.y = y;
 		this.orientation = orientation;
-		this.width = (orientation == HORIZONTAL)? 100 * length :
-					 100;
-		this.height = (orientation == HORIZONTAL)? 100 :
-					  100 * length;
+		this.width = (orientation == HORIZONTAL)? 100 * length - 1 :
+			100 - 1;
+		this.height = (orientation == HORIZONTAL)? 100 - 1 :
+			100 * length - 1;
 		setBounds(x, y, width, height);
 		setPreferredSize(new Dimension(width, height));
 		setBackground(new Color(random(), random(), random()));
 		lbl = new JLabel(c+"");
 		add(lbl);
 	}
-	
+
 	/**
 	 * Changes the block color.
 	 * @param color	The new color.
@@ -45,7 +45,7 @@ public class Block extends JPanel {
 		setBackground(color);
 		lbl.setBackground(color);
 	}
-	
+
 	/**
 	 * Generates a random number r such that
 	 * 0 <= r <= 255
@@ -54,24 +54,38 @@ public class Block extends JPanel {
 	private int random() {
 		return (int)(Math.random() * 256);
 	}
-	
+
 	/**
 	 * Move block
 	 * @param Pixels to be moved (positive -> up, right,
 	 * 							  negative -> left, bottom)
-	 * @throws InterruptedException	Thread.sleep exception
 	 */
-	public void move(int d) throws InterruptedException {
-		if (orientation == HORIZONTAL)
-			for (int i = 0; i < d; i++) {
-				setBounds(x + i, y, width, height);
-				Thread.sleep(10);
-			}
-		else
-			for (int i = 0; i < d; i++) {
-				setBounds(x, y + i, width, height);
-				Thread.sleep(10);
-			}
+	public void move(int d) {
+		new MoveThread(d).run();
 	}
-	
+
+	private class MoveThread extends Thread {
+
+		private int d;
+
+		public MoveThread(int d) {
+			this.d = d;
+		}
+
+		public void run() {
+			try {
+				if (orientation == HORIZONTAL)
+					for (int i = 0; i <= d; i++) {
+						setBounds(x + i, y, width, height);
+						Thread.sleep(10);
+					}
+				else
+					for (int i = 0; i <= d; i++) {
+						setBounds(x, y + i, width, height);
+						Thread.sleep(10);
+					}
+			} catch(InterruptedException e) {}
+		}
+	}
+
 }
