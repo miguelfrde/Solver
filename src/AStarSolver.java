@@ -25,30 +25,53 @@ public class AStarSolver extends Solver{
 		 
 	public AStarSolver(Board initial) {
     	// find a solution to the initial board (using the A* algorithm)
-    	MinPQ<SearchNode> pq = new MinPQ<SearchNode>();    	
+		/*MinPQ<SearchNode> pq = new MinPQ<SearchNode>();
+		Stack<Board> explored = new Stack<Board>();
+
+		pq.insert(new SearchNode(initial, 0, null));
+		SearchNode sn = null;
+		while (!pq.isEmpty()) {
+			sn = pq.delMin();
+			explored.push(sn.board);
+			if (sn.board.isGoal()) break;
+			for (Board b: sn.board.neighbors())
+				if (!explored.contains(b))
+					pq.insert(new SearchNode(b, sn.moves + 1, sn));
+		}*/
+		MinPQ<SearchNode> pq = new MinPQ<SearchNode>();
     	Stack<Board> explored = new Stack<Board>();
     	
-    	pq.insert(new SearchNode(initial, 0, null));    	
+    	pq.insert(new SearchNode(initial, 0, null));
     	
     	SearchNode sn = pq.delMin();
     	explored.push(sn.board);
+    	int count = 0;
     	
-    	while (!sn.board.isGoal()) {
+    	do {
     		for (Board b: sn.board.neighbors()) {
     			if (!explored.contains(b)) {
     				pq.insert(new SearchNode(b, sn.moves + 1, sn));
     				explored.push(b);
+    				count++;
     			}
     		}
     		sn = pq.delMin();
+    		if (sn.board.isGoal()) break;
+    	} while (!pq.isEmpty());
+    	
+    	if (pq.isEmpty()) {
+    		solvable = false;
+    		return;
     	}
     	
+    	System.out.println(count);
     	SearchNode prev = sn;
     	movements = new Stack<Action>();
     		
     	while (prev != null) {
     		movements.push(prev.board.getAction());
     		moves++;
+    		//System.out.println(prev.board);
     		prev = prev.previous;
     	}
     	solvable = true;
@@ -89,7 +112,7 @@ public class AStarSolver extends Solver{
         
 
         Board initial = new Board(blocks);
-        System.out.println(initial.priority());
+        
         // solve the puzzle
         AStarSolver solver = new AStarSolver(initial);
 
@@ -97,6 +120,6 @@ public class AStarSolver extends Solver{
         System.out.println("Minimum number of moves = " + solver.moves());
         
         for (Action a : solver.solution())
-        	System.out.println(a);
+        	System.out.println(a);             
 	}
 }
