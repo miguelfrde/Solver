@@ -1,8 +1,9 @@
-import java.util.Stack;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class AStarSolver extends Solver{
-	 private class SearchNode implements Comparable<SearchNode> {
+	private class SearchNode implements Comparable<SearchNode> {
     	private Board board;
     	private int moves;
     	private SearchNode previous;
@@ -24,29 +25,29 @@ public class AStarSolver extends Solver{
 		 
 	public AStarSolver(Board initial) {
     	// find a solution to the initial board (using the A* algorithm)
-    	MinPQ<SearchNode> pq = new MinPQ<SearchNode>();
-    	movements = new Stack<Board>();
+    	MinPQ<SearchNode> pq = new MinPQ<SearchNode>();    	
+    	Stack<Board> explored = new Stack<Board>();
     	
-    	pq.insert(new SearchNode(initial, 0, null));
+    	pq.insert(new SearchNode(initial, 0, null));    	
     	
-    	SearchNode sn1 = pq.delMin();
+    	SearchNode sn = pq.delMin();
+    	explored.push(sn.board);
     	
-    	while (!sn1.board.isGoal()) {
-    		for (Board b: sn1.board.neighbors()) {
-    			if (sn1.previous == null) 
-    				pq.insert(new SearchNode(b, 1, sn1));
-    			else if (!(b.equals(sn1.previous.board))) {
-    				pq.insert(new SearchNode(b, sn1.moves + 1, sn1));
+    	while (!sn.board.isGoal()) {
+    		for (Board b: sn.board.neighbors()) {
+    			if (!explored.contains(b)) {
+    				pq.insert(new SearchNode(b, sn.moves + 1, sn));
+    				explored.push(b);
     			}
     		}
-    		 		
-    		sn1 = pq.delMin();
+    		sn = pq.delMin();
     	}
     	
-    	SearchNode prev = sn1;
+    	SearchNode prev = sn;
+    	movements = new Stack<Action>();
     		
     	while (prev != null) {
-    		movements.push(prev.board);
+    		movements.push(prev.board.getAction());
     		moves++;
     		prev = prev.previous;
     	}
@@ -61,8 +62,41 @@ public class AStarSolver extends Solver{
 		return moves;
 	}
 
-	public Iterable<Board> solution() {
-		if (!solvable) return null;
+	public Iterable<Action> solution() {
+		if (!solvable) return null;		
     	return movements;
+	}
+	
+	public static void main(String[] args) {
+		 // create initial board from file
+		File file = new File("C:\\Users\\JORGE\\workspace\\Solver\\puzzles\\" + args[0]);
+		
+		Scanner in = null;
+		try {
+			in = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		in.next();
+		
+        int N = 6;
+        char[][] blocks = new char[N][N];
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                blocks[i][j] = in.next().charAt(0);
+        
+
+        Board initial = new Board(blocks);
+        System.out.println(initial.priority());
+        // solve the puzzle
+        AStarSolver solver = new AStarSolver(initial);
+
+        // print solution to standard output       
+        System.out.println("Minimum number of moves = " + solver.moves());
+        
+        for (Action a : solver.solution())
+        	System.out.println(a);
 	}
 }
