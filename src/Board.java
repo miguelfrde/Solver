@@ -6,9 +6,11 @@ public class Board {
     private char[][] blocks;
     private int N;
     private int priority = -1;
+    char blockMoved = '?';
+    int spacesMoved = 0;
     
     public Board(char[][] blocks) {
-        // CONTRUSCT A BOARD FROM AND N BY N ARRAY OF BLOCKS
+        // CONTRUCTS A BOARD FROM AN N BY N ARRAY OF BLOCKS
         // (WHERE BLOCKS [I][J] = BLOCK IN ROW I, COLUMN J)
         N = blocks.length;
         this.blocks = new char[N][N];
@@ -17,6 +19,16 @@ public class Board {
     		    this.blocks[i][j] = blocks[i][j];
     }
 
+    public Board(char[][] blocks, char block, int moves) {
+        // CONTRUCTS A BOARD FROM AN N BY N ARRAY OF BLOCKS
+        // (WHERE BLOCKS [I][J] = BLOCK IN ROW I, COLUMN J)
+    	// AND BY A LETTER (REPRESENTING LAST BLOCK MOVED)
+    	// AND BY MOVES (REPRESENTING THE TILES THE BLOCK WAS MOVED)
+        this(blocks);
+        this.blockMoved = block;
+        this.spacesMoved = moves;
+    }
+    
     public int dimension() {
         return N;	//SIDE LENGTH OF THE BLOCKS MATRIX
     }
@@ -29,18 +41,24 @@ public class Board {
         int count = 0;						//AUXILIARY VARIABLE FOR THE PRIORITY
         char value;  						//VALUE FROM EACH CELL IN THE BLOCKS
         boolean borderOfMB = false; 		//ALREADY PASSED FULL MAIN BLOCK?
-        int i = N%2 == 0? N/2 : N/2 - 1;	//ROW WERE MAIN BLOCK AND GOAL ARE
+        int i = N%2 == 0? N/2 - 1: N/2;		//ROW WERE MAIN BLOCK AND GOAL ARE
         
         for (int j = 0; j < N; j++) {
             value = blocks[i][j];			//VALUE FROM CURRENT CELL IN BLOCKS
-            if (value == '-') continue;		//IF EMPTY SPACE ("-") CONTINUE
+            
+            //IF EMPTY SPACE ("-") CONTINUE
+            if (value == '-') {
+            	if (borderOfMB) count++;
+            	continue;		
+            }
             
             //IF VALUE IS THE BORDER OF THE MAIN BLOCK ADD THE DISTANCE
             //BETWEEN IT AND THE GOAL ELSE ADD 1 FOR EVERY BLOCK IN 
             //FRONT OF THE MAIN BLOCK
-            if (value != 'X' && borderOfMB)	count++;
-            else if (value == 'X' && j < N - 1 && blocks[i][j + 1] != 'X') {
-            	count += N - j;
+            if (borderOfMB) {
+            	count++;
+            	//if (value != 'X') count++;   SI QUITAS ESTE COMENTARIO INCLUYE LOS OBSTACULOS
+            } else if (value == 'X' && j < N - 1 && blocks[i][j + 1] != 'X') {
             	borderOfMB = true;
             }
         }
@@ -51,9 +69,9 @@ public class Board {
     }
     
     public boolean isGoal() {
-    	int i = N%2 == 0? N/2 : N/2 - 1;	//ROW WERE MAIN BLOCK AND GOAL ARE
+    	int i = N%2 == 0? N/2 - 1 : N/2;	//ROW WERE MAIN BLOCK AND GOAL ARE
     	
-    	return blocks[i][-1] == 'X';		//IS MAIN BLOCK IN GOAL POSITION?
+    	return blocks[i][N-1] == 'X';		//IS MAIN BLOCK IN GOAL POSITION?
     }
     
     
@@ -91,54 +109,76 @@ public class Board {
         
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (blocks[i][j] == '-') { 
-                   if (blocks[i][j-1] != '-') {
-                	   char value = blocks[i][j-1];
-                	   tempj = j-2;
-                	   while (blocks[i][tempj] == value)
-                		   tempj--;
-                	   swap(blocks2, i, i, j, j-1);
-                	   swap(blocks2, i, i, j-1, tempj+1);
-                	   Board b = new Board(blocks2);
-                       neighbors.push(b);
-                       blocks2 = cloneBlocks();
-                   }              
-                   
-                   if (blocks[i][j+1] != '-') {
-                	   char value = blocks[i][j+1];
-                	   tempj = j+2;
-                	   while (blocks[i][tempj] == value)
-                		   tempj++;
-                	   swap(blocks2, i, i, j, j+1);
-                	   swap(blocks2, i, i, j+1, tempj-1);
-                	   Board b = new Board(blocks2);
-                       neighbors.push(b);
-                       blocks2 = cloneBlocks();
-                   }  
-                   
-                   if (blocks[i-1][j] != '-') {
-                	   char value = blocks[i-1][j];
-                	   tempi = i-2;
-                	   while (blocks[tempi][j] == value)
-                		   tempi--;
-                	   swap(blocks2, i, i-1, j, j);
-                	   swap(blocks2, i-1, tempi+1, j, j);
-                	   Board b = new Board(blocks2);
-                       neighbors.push(b);
-                       blocks2 = cloneBlocks();
-                   }  
-                   
-                   if (blocks[i+1][j] != '-') {
-                	   char value = blocks[i+1][j];
-                	   tempi = i+2;
-                	   while (blocks[tempi][j] == value)
-                		   tempi++;
-                	   swap(blocks2, i, i+1, j, j);
-                	   swap(blocks2, i+1, tempi-1, j, j);
-                	   Board b = new Board(blocks2);
-                       neighbors.push(b);
-                       blocks2 = cloneBlocks();
-                   } 
+                if (blocks2[i][j] == '-') {
+                	//MOV ABAJO
+                	if (i > 0 && blocks2[i-1][j] != '-') {
+                	    char value = blocks2[i-1][j];
+                	    if (i > 1 && value == blocks2[i-2][j]) {
+                		    tempi = i - 1;
+                		    while (tempi < N - 1 && blocks2[tempi+1][j] == '-') {
+		                        int aux = tempi - 1;
+		                	    while (aux > 0 && blocks2[aux-1][j] == value)
+		                		    aux--;
+		                	    swap(blocks2, aux, ++tempi, j, j); //move Hor
+		                	    Board b = new Board(blocks2, value, tempi - i + 1);
+		                        neighbors.push(b);
+                		    }
+                	    }   
+		                
+                	    blocks2 = cloneBlocks();
+                    }
+                	
+                	//MOV DERECHA
+                	if (j > 0 && blocks2[i][j-1] != '-') {
+                	    char value = blocks2[i][j-1];
+                	    if (j > 1 && value == blocks2[i][j-2]) {
+                		    tempj = j - 1;
+                		    while (tempj < N - 1 && blocks2[i][tempj+1] == '-') {
+		                        int aux = tempj - 1;
+		                        while (aux > 0 && blocks2[i][aux-1] == value)
+		                		    aux--;
+		                	    swap(blocks2, i, i, aux, ++tempj); //move Hor
+		                	    Board b = new Board(blocks2, value, tempj - j + 1);
+		                        neighbors.push(b);
+                		    }
+                	    }   
+		                
+                	    blocks2 = cloneBlocks();
+                    }
+                	                	
+                	//MOV ARRIBA
+                	if (i < N - 1 && blocks2[i+1][j] != '-') {
+                		char value = blocks2[i+1][j];
+                	    if (i < N - 2 && value == blocks2[i+2][j]) {
+                		    tempi = i + 1;
+                		    while (tempi > 0 && blocks2[tempi-1][j] == '-') {
+		                        int aux = tempi + 1;
+		                	    while (aux < N - 1 && blocks2[aux+1][j] == value)
+		                		    aux++;
+		                	    swap(blocks2, aux, --tempi, j, j); //move Hor
+		                	    Board b = new Board(blocks2, value, tempi - i - 1);
+		                        neighbors.push(b);
+                		    }
+                	    }   
+		                blocks2 = cloneBlocks();
+                    }
+                	
+                	//MOV IZQUIERDA
+                	if (j < N - 1 && blocks2[i][j+1] != '-') {
+                		char value = blocks2[i][j+1];
+                	    if (j < N - 2 && value == blocks2[i][j+2]) {
+                		    tempj = j + 1;
+                		    while (tempj > 0 && blocks2[i][tempj-1] == '-') {
+		                        int aux = tempj + 1;
+		                	    while (aux < N - 1 && blocks2[i][aux+1] == value)
+		                		    aux++;
+		                	    swap(blocks2, i, i, aux, --tempj); //move Hor
+		                	    Board b = new Board(blocks2, value, tempj -j - 1);
+		                        neighbors.push(b);
+                		    }
+                	    }   
+		                blocks2 = cloneBlocks();
+                    }               
                 }
             }
         }
@@ -148,7 +188,7 @@ public class Board {
 
     public String toString() {
         // string representation of the board (in the output format specified below)
-        String s = N + "\n";
+        String s = blockMoved + ", " + spacesMoved + "\n";
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++)
                 s += blocks[i][j] + " ";
@@ -157,8 +197,12 @@ public class Board {
         }
 
         return s;
+    }    
+    
+    public Action getAction() {
+    	return new Action(blockMoved, spacesMoved);
     }
-
+    
     //SWAPS TWO VALUES IN AN ARRAY
     private void swap(char[][] array, int row1, int row2, int col1, int col2) {
         char temp = array[row1][col1];
