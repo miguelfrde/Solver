@@ -1,9 +1,9 @@
 import java.util.Stack;
 
 
-public class Board {
+public class Board implements Comparable<Board> {
 
-    private char[][] blocks;
+    char[][] blocks;
     private int N;
     private int priority = -1;
     char blockMoved = '?';
@@ -40,26 +40,19 @@ public class Board {
 
         int count = 0;						//AUXILIARY VARIABLE FOR THE PRIORITY
         char value;  						//VALUE FROM EACH CELL IN THE BLOCKS
-        boolean borderOfMB = false; 		//ALREADY PASSED FULL MAIN BLOCK?
         int i = N%2 == 0? N/2 - 1: N/2;		//ROW WERE MAIN BLOCK AND GOAL ARE
         
         for (int j = 0; j < N; j++) {
             value = blocks[i][j];			//VALUE FROM CURRENT CELL IN BLOCKS
             
             //IF EMPTY SPACE ("-") CONTINUE
-            if (value == '-') {
-            	if (borderOfMB) count++;
-            	continue;		
-            }
-            
+            if (value == '-') continue;		
+                        
             //IF VALUE IS THE BORDER OF THE MAIN BLOCK ADD THE DISTANCE
             //BETWEEN IT AND THE GOAL ELSE ADD 1 FOR EVERY BLOCK IN 
             //FRONT OF THE MAIN BLOCK
-            if (borderOfMB) {
+            if (value == 'X' && j < N - 1 && blocks[i][j + 1] != 'X') {
             	count++;
-            	//if (value != 'X') count++;   SI QUITAS ESTE COMENTARIO INCLUYE LOS OBSTACULOS
-            } else if (value == 'X' && j < N - 1 && blocks[i][j + 1] != 'X') {
-            	borderOfMB = true;
             }
         }
     	
@@ -208,5 +201,12 @@ public class Board {
         char temp = array[row1][col1];
         array[row1][col1] = array[row2][col2];
         array[row2][col2] = temp;
-    }	
+    }
+
+	@Override
+	public int compareTo(Board b) {
+		if (this.hashCode() < b.hashCode()) return -1;
+		else if (this.hashCode() == b.hashCode()) return 0;
+		else return 1;
+	}	
 }
