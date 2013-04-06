@@ -23,18 +23,20 @@ public class BFSSolver extends Solver{
     	queue.enqueue(new SearchNode(initial, 0, null));    	
     	SearchNode sn = queue.dequeue();
     	previous.push(sn.board);
-    	
+    	int count = 0;
     	while (!sn.board.isGoal()) {
     		for (Board b: sn.board.neighbors()) {
     			if (!previous.contains(b)) {
     				queue.enqueue(new SearchNode(b, sn.moves + 1, sn));
     				previous.push(b);
+    				count++;
     			}
     		}
     		
     		sn = queue.dequeue();
     	} 
-    	
+
+    	System.out.println(count);
     	SearchNode prev = sn;
     	movements = new Stack<Action>();
     	
