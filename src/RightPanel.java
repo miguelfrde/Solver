@@ -5,11 +5,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
@@ -70,6 +72,7 @@ public class RightPanel extends JPanel {
 		radioGroup.add(rbDFS);
 		
 		cbPuzzles.addActionListener(new ComboBoxListener());
+		btnSolve.addActionListener(new SolveButtonListener());
 		
 		add(cbPuzzles);
 		add(rbAStar);
@@ -96,6 +99,48 @@ public class RightPanel extends JPanel {
 				Shared.board.load((BoardFile)cbPuzzles.getSelectedItem());
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
+			}
+		}
+		
+	}
+	
+	private class SolveButtonListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			BoardFile bFile= (BoardFile)cbPuzzles.getSelectedItem();
+			Scanner in = null;
+			try {
+				in = new Scanner(bFile.file());
+			} catch (FileNotFoundException e1) {}
+			
+			in.next();
+	        char[][] blocks = new char[6][6];
+	        for (int i = 0; i < 6; i++)
+	            for (int j = 0; j < 6; j++)
+	                blocks[i][j] = in.next().charAt(0);
+	        
+	        Board initial = new Board(blocks);
+	        Solver s;
+			if (rbAStar.isSelected())
+				s = new AStarSolver(initial);
+			else if (rbBFS.isSelected())
+				s = new BFSSolver(initial);
+			else if (rbDFS.isSelected())
+				s = new DFSSolver(initial);
+			else {
+				JOptionPane.showMessageDialog(null,
+						"You should select an algorithm");
+				return;
+			}
+			if (s.isSolvable()) {
+				for (Action a : s.solution())
+					if (a.getBlock() == 'X')
+						Shared.board.blocks[0].move(100 * a.getMoves());
+					else Shared.board.blocks[a.getBlock()-96].move(100 * a.getMoves());
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"The board you selected has no solution");
 			}
 		}
 		
