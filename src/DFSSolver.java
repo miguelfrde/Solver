@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import datastructures.Stack;
+
 public class DFSSolver extends Solver{
 	private class SearchNode {
 	    private Board board;

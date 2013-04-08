@@ -1,3 +1,5 @@
+import datastructures.Stack;
+
 
 public abstract class Solver {
 	protected boolean solvable;

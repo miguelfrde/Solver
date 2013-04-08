@@ -1,3 +1,4 @@
+package datastructures;
 /*************************************************************************
  *  Compilation:  javac MinPQ.java
  *  Execution:    java MinPQ < input.txt

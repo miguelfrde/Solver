@@ -2,6 +2,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import datastructures.MinPQ;
+import datastructures.Stack;
+
 public class AStarSolver extends Solver{
 	private class SearchNode implements Comparable<SearchNode> {
     	private Board board;

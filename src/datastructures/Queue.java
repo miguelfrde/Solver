@@ -1,10 +1,12 @@
+package datastructures;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class Stack<Item> implements Iterable<Item> { 
+public class Queue<Item> implements Iterable<Item> { 
 
-	private int N;          // size of the stack
-    private Node first;     // beginning of stack
+	private int N;          // size of the queue
+    private Node first;     // beginning of queue
+    private Node last;     //  end of queue
 
     // helper linked list class
     private class Node {
@@ -12,11 +14,13 @@ public class Stack<Item> implements Iterable<Item> {
         private Node next;
     }
     
-	public Stack() {
+	public Queue() {
 		first = null;
+		last = null;
 		N = 0;		
 	}	
-		
+	
+	
 	public boolean isEmpty() {
 		return size() == 0;
 	}
@@ -25,32 +29,28 @@ public class Stack<Item> implements Iterable<Item> {
 		return N;
 	}
 	
-	public void push(Item item) {
-		Node oldfirst = first;
-		first = new Node();
-		first.item = item;
-		first.next = oldfirst;
+	public void enqueue(Item item) {
+		Node oldlast = last;
+		last = new Node();
+		last.item = item;
+		last.next = null;
 		
+        if (isEmpty()) first = last;        
+        else oldlast.next = last;
+        
 		N++;
 	}
 	
-	public Item pop() {
+	public Item dequeue() {
 		Item item = first.item;
 		first = first.next;
-		N--;		
+		N--;
+		if (isEmpty()) last = null;
 		return item;
 	}
 	
 	public Iterator<Item> iterator() {
 		return new ListIterator();
-	}
-	
-	public boolean contains(Item item) {
-		for (Item it: this) {
-			if (it.equals(item)) return true;
-		}
-		
-		return false;
 	}
 	
     private class ListIterator implements Iterator<Item> {

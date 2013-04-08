@@ -2,6 +2,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import datastructures.Queue;
+import datastructures.Stack;
+
 public class BFSSolver extends Solver{
 	private class SearchNode{
 	    private Board board;
