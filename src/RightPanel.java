@@ -137,7 +137,10 @@ public class RightPanel extends JPanel {
 				for (Action a : s.solution())
 					if (a.getBlock() == 'X')
 						Shared.board.blocks[0].move(100 * a.getMoves());
-					else Shared.board.blocks[a.getBlock()-96].move(100 * a.getMoves());
+					else if (a.getBlock() != '?') {
+						System.out.println(a.getBlock() + " " + a.getMoves());
+						Shared.board.blocks[a.getBlock()-96].move(100 * a.getMoves());
+					}
 			} else {
 				JOptionPane.showMessageDialog(null,
 						"The board you selected has no solution");
