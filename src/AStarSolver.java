@@ -84,7 +84,6 @@ public class AStarSolver extends Solver{
 		try {
 			in = new Scanner(file);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
