@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 public class App extends JFrame {
 	
 	public App() {
+		Shared.app = this;
 		setTitle("Solver");
 		setSize(new Dimension(930, 650));
 		setLocationRelativeTo(null);
@@ -22,6 +23,7 @@ public class App extends JFrame {
 		getContentPane().add(rightSidebar, BorderLayout.EAST);
 		getContentPane().add(board, BorderLayout.CENTER);
 		setVisible(true);
+		rightSidebar.runSolverThread();
 	}
 	
 	public static void main(String[] args) throws InterruptedException {

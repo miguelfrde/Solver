@@ -20,13 +20,14 @@ import javax.swing.JRadioButton;
  */
 @SuppressWarnings("serial")
 public class RightPanel extends JPanel {
-	
+
 	private JComboBox<BoardFile> cbPuzzles;
 	private JButton btnSolve;
 	private JRadioButton rbAStar;
 	private JRadioButton rbDFS;
 	private JRadioButton rbBFS;
-	
+	public static boolean solving = false;
+
 	/**
 	 * Creates right sidebar
 	 */
@@ -34,11 +35,11 @@ public class RightPanel extends JPanel {
 		setPreferredSize(new Dimension(300,630));
 		setBackground(Color.LIGHT_GRAY);
 		setLayout(null);
-		
+
 		initComponents();
 		loadPuzzles();
 	}
-	
+
 	/**
 	 * Initializes combobox, radiobuttons and button
 	 */
@@ -65,22 +66,27 @@ public class RightPanel extends JPanel {
 		rbBFS.setFocusPainted(false);
 		rbDFS.setFocusPainted(false);
 		btnSolve.setFocusPainted(false);
-		
+
 		ButtonGroup radioGroup = new ButtonGroup();
 		radioGroup.add(rbAStar);
 		radioGroup.add(rbBFS);
 		radioGroup.add(rbDFS);
-		
+
 		cbPuzzles.addActionListener(new ComboBoxListener());
 		btnSolve.addActionListener(new SolveButtonListener());
-		
+
 		add(cbPuzzles);
 		add(rbAStar);
 		add(rbBFS);
 		add(rbDFS);
 		add(btnSolve);
 	}
-	
+
+	public void runSolverThread() {
+		SolverThread t = new SolverThread();
+		t.run();
+	}
+
 	/**
 	 * Loads puzzles from .puzzle files in /puzzles
 	 */
@@ -92,7 +98,7 @@ public class RightPanel extends JPanel {
 				cbPuzzles.addItem(new BoardFile(file));
 		}
 	}
-	
+
 	private class ComboBoxListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
@@ -101,27 +107,34 @@ public class RightPanel extends JPanel {
 				e1.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 	private class SolveButtonListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			new SolverThread().start();
+
+		}
+	}
+	private class SolverThread extends Thread {
+
+		public void run() {
 			BoardFile bFile= (BoardFile)cbPuzzles.getSelectedItem();
 			Scanner in = null;
 			try {
 				in = new Scanner(bFile.file());
 			} catch (FileNotFoundException e1) {}
-			
+
 			in.next();
-	        char[][] blocks = new char[6][6];
-	        for (int i = 0; i < 6; i++)
-	            for (int j = 0; j < 6; j++)
-	                blocks[i][j] = in.next().charAt(0);
-	        
-	        Board initial = new Board(blocks);
-	        Solver s;
+			char[][] blocks = new char[6][6];
+			for (int i = 0; i < 6; i++)
+				for (int j = 0; j < 6; j++)
+					blocks[i][j] = in.next().charAt(0);
+
+			Board initial = new Board(blocks);
+			Solver s;
 			if (rbAStar.isSelected())
 				s = new AStarSolver(initial);
 			else if (rbBFS.isSelected())
@@ -131,22 +144,22 @@ public class RightPanel extends JPanel {
 			else {
 				JOptionPane.showMessageDialog(null,
 						"You should select an algorithm");
+				solving = false;
 				return;
 			}
-			if (s.isSolvable()) {
-				for (Action a : s.solution())
+			if (s.isSolvable())
+				for (Action a : s.solution()) {
 					if (a.getBlock() == 'X')
 						Shared.board.blocks[0].move(100 * a.getMoves());
 					else if (a.getBlock() != '?') {
-						System.out.println(a.getBlock() + " " + a.getMoves());
-						Shared.board.blocks[a.getBlock()-96].move(100 * a.getMoves());
+						System.out.println(a.getBlock() + " " +  a.getMoves());
+						Shared.board.blocks[a.getBlock() - 96].move(100 * a.getMoves());
 					}
-			} else {
+				}
+			else
 				JOptionPane.showMessageDialog(null,
 						"The board you selected has no solution");
-			}
 		}
-		
 	}
 
 }
