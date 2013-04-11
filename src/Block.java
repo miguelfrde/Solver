@@ -49,7 +49,7 @@ public class Block extends JPanel {
 	/**
 	 * Generates a random number r such that
 	 * 0 <= r <= 255
-	 * @return	Random integer in range [0, 255]
+	 * @return	Random number integer in range [0, 255]
 	 */
 	private int random() {
 		return (int)(Math.random() * 256);
@@ -63,15 +63,17 @@ public class Block extends JPanel {
 	public void move(int d) {
 		try {
 			if (orientation == HORIZONTAL)
-				for (int i = 0; i <= d; i++) {
-					setBounds(x + i, y, width, height);
+				for (int i = 0; i <= Math.abs(d); i++) {
+					setBounds(x + ((d < 0)? -i : i), y, width, height);
 					Thread.sleep(10);
 				}
 			else
-				for (int i = 0; i <= d; i++) {
-					setBounds(x, y + i, width, height);
+				for (int i = 0; i <= Math.abs(d); i++) {
+					setBounds(x, y + ((d < 0)? -i : i), width, height);
 					Thread.sleep(10);
 				}
+		x = getX();
+		y = getY();
 		} catch(InterruptedException e) {}
 	}
 
