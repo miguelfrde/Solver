@@ -114,7 +114,10 @@ public class RightPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			new SolverThread().start();
+			try {
+				Shared.board.load((BoardFile)cbPuzzles.getSelectedItem());
+				new SolverThread().start();
+			} catch (FileNotFoundException e1) {}
 
 		}
 	}
@@ -162,6 +165,7 @@ public class RightPanel extends JPanel {
 				JOptionPane.showMessageDialog(null,
 						"The board you selected has no solution");
 			btnSolve.setEnabled(true);
+			Shared.board.blocks[0].setBackground(Color.GREEN);
 		}
 	}
 
