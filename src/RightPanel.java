@@ -121,6 +121,7 @@ public class RightPanel extends JPanel {
 	private class SolverThread extends Thread {
 
 		public void run() {
+			btnSolve.setEnabled(false);
 			BoardFile bFile= (BoardFile)cbPuzzles.getSelectedItem();
 			Scanner in = null;
 			try {
@@ -145,6 +146,7 @@ public class RightPanel extends JPanel {
 				JOptionPane.showMessageDialog(null,
 						"You should select an algorithm");
 				solving = false;
+				btnSolve.setEnabled(true);
 				return;
 			}
 			if (s.isSolvable())
@@ -159,6 +161,7 @@ public class RightPanel extends JPanel {
 			else
 				JOptionPane.showMessageDialog(null,
 						"The board you selected has no solution");
+			btnSolve.setEnabled(true);
 		}
 	}
 
