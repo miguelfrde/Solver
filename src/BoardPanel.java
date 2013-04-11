@@ -71,5 +71,7 @@ public class BoardPanel extends JPanel {
 			g.drawLine(i, 15, i, 615);
 			g.drawLine(15, i, 615, i);
 		}
+		g.drawLine(515, 215, 615, 315);
+		g.drawLine(615, 215, 515, 315);
 	}
 }
