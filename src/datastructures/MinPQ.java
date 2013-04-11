@@ -1,40 +1,9 @@
 package datastructures;
-/*************************************************************************
- *  Compilation:  javac MinPQ.java
- *  Execution:    java MinPQ < input.txt
- *  
- *  Generic min priority queue implementation with a binary heap.
- *  Can be used with a comparator instead of the natural order.
- *
- *  % java MinPQ < tinyPQ.txt
- *  E A E (6 left on pq)
- *
- *  We use a one-based array to simplify parent and child calculations.
- *
- *************************************************************************/
 
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/**
- *  The <tt>MinPQ</tt> class represents a priority queue of generic keys.
- *  It supports the usual <em>insert</em> and <em>delete-the-minimum</em>
- *  operations, along with methods for peeking at the minimum key,
- *  testing if the priority queue is empty, and iterating through
- *  the keys.
- *  <p>
- *  The <em>insert</em> and <em>delete-the-minimum</em> operations take
- *  logarithmic amortized time.
- *  The <em>min</em>, <em>size</em>, and <em>is-empty</em> operations take constant time.
- *  Construction takes time proportional to the specified capacity or the number of
- *  items used to initialize the data structure.
- *  <p>
- *  This implementation uses a binary heap.
- *  <p>
- *  For additional documentation, see <a href="http://algs4.cs.princeton.edu/24pq">Section 2.4</a> of
- *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
- */
 public class MinPQ<Key> implements Iterable<Key> {
     private Key[] pq;                    // store items at indices 1 to N
     private int N;                       // number of items on priority queue
@@ -43,7 +12,8 @@ public class MinPQ<Key> implements Iterable<Key> {
    /**
      * Create an empty priority queue with the given initial capacity.
      */
-    public MinPQ(int initCapacity) {
+    @SuppressWarnings("unchecked")
+	public MinPQ(int initCapacity) {
         pq = (Key[]) new Object[initCapacity + 1];
         N = 0;
     }
@@ -57,7 +27,8 @@ public class MinPQ<Key> implements Iterable<Key> {
      * Create an empty priority queue with the given initial capacity,
      * using the given comparator.
      */
-    public MinPQ(int initCapacity, Comparator<Key> comparator) {
+    @SuppressWarnings("unchecked")
+	public MinPQ(int initCapacity, Comparator<Key> comparator) {
         this.comparator = comparator;
         pq = (Key[]) new Object[initCapacity + 1];
         N = 0;
@@ -72,7 +43,8 @@ public class MinPQ<Key> implements Iterable<Key> {
      * Create a priority queue with the given items.
      * Takes time proportional to the number of items using sink-based heap construction.
      */
-    public MinPQ(Key[] keys) {
+    @SuppressWarnings("unchecked")
+	public MinPQ(Key[] keys) {
         N = keys.length;
         pq = (Key[]) new Object[keys.length + 1];
         for (int i = 0; i < N; i++)
@@ -106,7 +78,8 @@ public class MinPQ<Key> implements Iterable<Key> {
     }
 
     // helper function to double the size of the heap array
-    private void resize(int capacity) {
+    @SuppressWarnings("unchecked")
+	private void resize(int capacity) {
         assert capacity > N;
         Key[] temp = (Key[]) new Object[capacity];
         for (int i = 1; i <= N; i++) temp[i] = pq[i];
@@ -166,7 +139,8 @@ public class MinPQ<Key> implements Iterable<Key> {
    /***********************************************************************
     * Helper functions for compares and swaps.
     **********************************************************************/
-    private boolean greater(int i, int j) {
+    @SuppressWarnings("unchecked")
+	private boolean greater(int i, int j) {
         if (comparator == null) {
             return ((Comparable<Key>) pq[i]).compareTo(pq[j]) > 0;
         }
@@ -181,12 +155,12 @@ public class MinPQ<Key> implements Iterable<Key> {
         pq[j] = swap;
     }
 
-    // is pq[1..N] a min heap?
+    // is pq a min heap?
     private boolean isMinHeap() {
         return isMinHeap(1);
     }
 
-    // is subtree of pq[1..N] rooted at k a min heap?
+    // is subtree of pq rooted at k a min heap?
     private boolean isMinHeap(int k) {
         if (k > N) return true;
         int left = 2*k, right = 2*k + 1;
