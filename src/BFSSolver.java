@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import datastructures.Queue;
@@ -21,22 +22,21 @@ public class BFSSolver extends Solver{
     // FIND A SOLUTION TO THE INITIAL BOARD USING BFS ALGORITHM
 	public BFSSolver(Board initial) {
     	Queue<SearchNode> queue = new Queue<SearchNode>();
-    	Stack<Board> previous = new Stack<Board>();
+    	ArrayList<Board> explored = new ArrayList<Board>();
     	
     	queue.enqueue(new SearchNode(initial, 0, null));    	
-    	SearchNode sn = queue.dequeue();
-    	previous.push(sn.board);
+    	SearchNode sn = null;
     	int count = 0;
-    	while (!sn.board.isGoal()) {
-    		for (Board b: sn.board.neighbors()) {
-    			if (!previous.contains(b)) {
-    				queue.enqueue(new SearchNode(b, sn.moves + 1, sn));
-    				previous.push(b);
-    				count++;
-    			}
-    		}
-    		
+    	while (!queue.isEmpty()) {
     		sn = queue.dequeue();
+    		if (explored.contains(sn.board)) continue;
+    		if (sn.board.isGoal()) break;
+			explored.add(sn.board);
+			count++;
+    		for (Board b: sn.board.neighbors()) {
+    			if (!explored.contains(b))
+    				queue.enqueue(new SearchNode(b, sn.moves + 1, sn));
+    		}
     	} 
 
     	System.out.println(count);
@@ -66,7 +66,7 @@ public class BFSSolver extends Solver{
 	
 	public static void main(String[] args) {
 		 // create initial board from file
-		File file = new File("C:\\Users\\JORGE\\workspace\\Solver\\puzzles\\" + args[0]);
+		File file = new File("puzzles/Beginner-02.puzzle");
 		
 		Scanner in = null;
 		try {
