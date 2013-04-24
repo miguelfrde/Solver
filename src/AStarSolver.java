@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import datastructures.MinPQ;
@@ -27,26 +28,23 @@ public class AStarSolver extends Solver{
     }
 		 
 	public AStarSolver(Board initial) {
-    			MinPQ<SearchNode> pq = new MinPQ<SearchNode>();
-    	Stack<Board> previous = new Stack<Board>();
-    	
-    	SearchNode sn = null;
-    	
+    	MinPQ<SearchNode> pq = new MinPQ<SearchNode>();
+    	ArrayList<Board> explored = new ArrayList<Board>();
     	pq.insert(new SearchNode(initial, 0, null));
-    	previous.push(initial);
     	int count = 0;
     	
-    	while (!pq.isEmpty()) {    		
-    		sn = pq.delMin();    		
+    	SearchNode sn = null;
+    	while (!pq.isEmpty()) {
+    		sn = pq.delMin();  
+    		if (explored.contains(sn.board)) continue;
     		if (sn.board.isGoal()) break;
-    		    		
+			explored.add(sn.board);
+			count++;
     		for (Board b: sn.board.neighbors()) {
-    			if (!previous.contains(b)) {
+    			if (!explored.contains(b)) {
     				pq.insert(new SearchNode(b, sn.moves + 1, sn));
-    				previous.push(b);
-    				count++;
     			}
-    		}    		
+    		}
     	} 
     	
     	if (pq.isEmpty()) {
@@ -81,7 +79,7 @@ public class AStarSolver extends Solver{
 	
 	public static void main(String[] args) {
 		 // create initial board from file
-		File file = new File("C:\\Users\\JORGE\\workspace\\Solver\\puzzles\\" + args[0]);
+		File file = new File("puzzles/Beginner-02.puzzle");
 		
 		Scanner in = null;
 		try {

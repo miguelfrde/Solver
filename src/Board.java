@@ -1,7 +1,7 @@
 import java.util.Stack;
 
 
-public class Board implements Comparable<Board> {
+public class Board {
 
     char[][] blocks;
     private int N;
@@ -35,11 +35,11 @@ public class Board implements Comparable<Board> {
     
     
     public int priority() {
-        //IF PRIORITY HAS NOT BEEN CACHED GET IT, OTHERWISE RETURN CACHED VALUE
+    	//IF PRIORITY HAS NOT BEEN CACHED GET IT, OTHERWISE RETURN CACHED VALUE
         if (priority != -1) return priority;
-
-        int count = 0;						//AUXILIARY VARIABLE FOR THE PRIORITY
-        char value;  						//VALUE FROM EACH CELL IN THE BLOCKS
+        if (isGoal()) return 0;
+        int count = 0;
+        char value;
         int i = N%2 == 0? N/2 - 1: N/2;		//ROW WERE MAIN BLOCK AND GOAL ARE
         
         for (int j = 0; j < N; j++) {
@@ -47,13 +47,11 @@ public class Board implements Comparable<Board> {
             
             //IF EMPTY SPACE ("-") CONTINUE
             if (value == '-') continue;		
-                        
-            //IF VALUE IS THE BORDER OF THE MAIN BLOCK ADD THE DISTANCE
-            //BETWEEN IT AND THE GOAL ELSE ADD 1 FOR EVERY BLOCK IN 
-            //FRONT OF THE MAIN BLOCK
-            if (value == 'X' && j < N - 1 && blocks[i][j + 1] != 'X') {
-            	count++;
+            if (value == 'X') {
+            	j++;
+            	continue;
             }
+            count++;
         }
     	
         //CACHE THE VALUE AND RETURN IT
@@ -74,14 +72,10 @@ public class Board implements Comparable<Board> {
         if (!(o instanceof Board)) return false;
         Board b = (Board) o;
         if (dimension() != b.dimension()) return false;
-       
-        boolean flag = true;	//AUXILIARY VARIABLE FOR MISMATCH
-
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++)
-                if (blocks[i][j] != b.blocks[i][j]) flag = false;
-
-        return flag;
+                if (blocks[i][j] != b.blocks[i][j]) return false;
+        return true;
     }
     
     private char[][] cloneBlocks() {
@@ -202,11 +196,4 @@ public class Board implements Comparable<Board> {
         array[row1][col1] = array[row2][col2];
         array[row2][col2] = temp;
     }
-
-	@Override
-	public int compareTo(Board b) {
-		if (this.hashCode() < b.hashCode()) return -1;
-		else if (this.hashCode() == b.hashCode()) return 0;
-		else return 1;
-	}	
 }
