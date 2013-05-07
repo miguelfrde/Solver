@@ -23,7 +23,6 @@ public class App extends JFrame {
 		getContentPane().add(rightSidebar, BorderLayout.EAST);
 		getContentPane().add(board, BorderLayout.CENTER);
 		setVisible(true);
-		rightSidebar.runSolverThread();
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
