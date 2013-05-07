@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -23,11 +24,17 @@ public class RightPanel extends JPanel {
 
 	private JComboBox<BoardFile> cbPuzzles;
 	private JButton btnSolve;
+	private JButton btnShow;
 	private JRadioButton rbAStar;
 	private JRadioButton rbDFS;
 	private JRadioButton rbBFS;
+	private JLabel lbMoves;
+	private JLabel lbExpNodes;
+	private JLabel lbTime;
+	
 	public static boolean solving = false;
-
+	private Solver s;
+	
 	/**
 	 * Creates right sidebar
 	 */
@@ -49,24 +56,41 @@ public class RightPanel extends JPanel {
 		rbDFS     = new JRadioButton("DFS");
 		rbBFS 	  = new JRadioButton("BFS");
 		btnSolve  = new JButton("Solve");
-
-		cbPuzzles.setBounds(50, 0, 200,50);
+		btnShow  = new JButton("Show");
+		lbMoves = new JLabel("");
+		lbExpNodes = new JLabel("");
+		lbTime = new JLabel("");
+		
+		cbPuzzles.setBounds(50, 0, 200, 30);
 		rbAStar.setBounds(50, 50, 50, 50);
 		rbBFS.setBounds(120, 50, 75, 50);
 		rbDFS.setBounds(190, 50, 75, 50);
-		btnSolve.setBounds(100, 150, 100, 50);
-
+		btnSolve.setBounds(50, 140, 100, 50);
+		btnShow.setBounds(155, 140, 100, 50);
+		lbMoves.setBounds(50, 220, 300, 30);
+		lbExpNodes.setBounds(50, 260, 300, 30);
+		lbTime.setBounds(50, 300, 300, 30);
+		
 		cbPuzzles.setToolTipText("Pick a puzzle to solve");
 		cbPuzzles.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		rbAStar.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		rbBFS.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		rbDFS.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		btnSolve.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		btnShow.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		rbAStar.setFocusPainted(false);
 		rbBFS.setFocusPainted(false);
 		rbDFS.setFocusPainted(false);
 		btnSolve.setFocusPainted(false);
+		btnShow.setFocusPainted(false);
 
+		rbAStar.setBackground(Color.LIGHT_GRAY);
+		rbBFS.setBackground(Color.LIGHT_GRAY);
+		rbDFS.setBackground(Color.LIGHT_GRAY);
+		lbMoves.setBackground(Color.LIGHT_GRAY);
+		lbExpNodes.setBackground(Color.LIGHT_GRAY);
+		lbTime.setBackground(Color.LIGHT_GRAY);
+		
 		ButtonGroup radioGroup = new ButtonGroup();
 		radioGroup.add(rbAStar);
 		radioGroup.add(rbBFS);
@@ -74,17 +98,19 @@ public class RightPanel extends JPanel {
 
 		cbPuzzles.addActionListener(new ComboBoxListener());
 		btnSolve.addActionListener(new SolveButtonListener());
+		btnShow.addActionListener(new ShowButtonListener());
 
+		btnShow.setEnabled(false);
+		
 		add(cbPuzzles);
 		add(rbAStar);
 		add(rbBFS);
 		add(rbDFS);
 		add(btnSolve);
-	}
-
-	public void runSolverThread() {
-		SolverThread t = new SolverThread();
-		t.run();
+		add(btnShow);
+		add(lbMoves);
+		add(lbExpNodes);
+		add(lbTime);
 	}
 
 	/**
@@ -107,24 +133,33 @@ public class RightPanel extends JPanel {
 				e1.printStackTrace();
 			}
 		}
-
 	}
 
 	private class SolveButtonListener implements ActionListener {
-
-		@Override
+		public void actionPerformed(ActionEvent e) {
+				new SolverThread().start();
+		}
+	}
+	
+	private class ShowButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				Shared.board.load((BoardFile)cbPuzzles.getSelectedItem());
-				new SolverThread().start();
+				new ShowThread().start();
 			} catch (FileNotFoundException e1) {}
-
 		}
 	}
+	
 	private class SolverThread extends Thread {
 
 		public void run() {
 			btnSolve.setEnabled(false);
+			btnShow.setEnabled(false);
+			cbPuzzles.setEnabled(false);
+			rbAStar.setEnabled(false);
+			rbBFS.setEnabled(false);
+			rbDFS.setEnabled(false);
+			
 			BoardFile bFile= (BoardFile)cbPuzzles.getSelectedItem();
 			Scanner in = null;
 			try {
@@ -138,7 +173,7 @@ public class RightPanel extends JPanel {
 					blocks[i][j] = in.next().charAt(0);
 
 			Board initial = new Board(blocks);
-			Solver s;
+			
 			if (rbAStar.isSelected())
 				s = new AStarSolver(initial);
 			else if (rbBFS.isSelected())
@@ -149,9 +184,43 @@ public class RightPanel extends JPanel {
 				JOptionPane.showMessageDialog(null,
 						"You should select an algorithm");
 				solving = false;
+				
+				lbMoves.setText("Number of Moves: N/A");
+				lbExpNodes.setText("Number of Expanded Nodes N/A");
+				lbTime.setText("Running time: N/A");
+				
 				btnSolve.setEnabled(true);
+				btnShow.setEnabled(true);
+				cbPuzzles.setEnabled(true);
+				rbAStar.setEnabled(true);
+				rbBFS.setEnabled(true);
+				rbDFS.setEnabled(true);
 				return;
 			}
+			
+			lbMoves.setText("Number of Moves: " + s.moves());
+			lbExpNodes.setText("Number of Expanded Nodes " + s.expandedNodes());
+			lbTime.setText("Running time: " + s.getRunningTime());
+			
+			btnSolve.setEnabled(true);
+			btnShow.setEnabled(true);
+			cbPuzzles.setEnabled(true);
+			rbAStar.setEnabled(true);
+			rbBFS.setEnabled(true);
+			rbDFS.setEnabled(true);
+		}
+	}
+
+	private class ShowThread extends Thread {
+
+		public void run() {
+			btnSolve.setEnabled(false);
+			btnShow.setEnabled(false);
+			cbPuzzles.setEnabled(false);
+			rbAStar.setEnabled(false);
+			rbBFS.setEnabled(false);
+			rbDFS.setEnabled(false);
+			
 			if (s.isSolvable())
 				for (Action a : s.solution()) {
 					if (a.getBlock() == 'X')
@@ -163,8 +232,13 @@ public class RightPanel extends JPanel {
 				JOptionPane.showMessageDialog(null,
 						"The board you selected has no solution");
 			btnSolve.setEnabled(true);
+			btnShow.setEnabled(true);
+			cbPuzzles.setEnabled(true);
+			rbAStar.setEnabled(true);
+			rbBFS.setEnabled(true);
+			rbDFS.setEnabled(true);
+			
 			Shared.board.blocks[0].setBackground(Color.GREEN);
 		}
 	}
-
 }
