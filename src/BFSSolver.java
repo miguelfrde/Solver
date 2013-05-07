@@ -19,27 +19,40 @@ public class BFSSolver extends Solver{
 	   	}
 	}
 			 
-    // FIND A SOLUTION TO THE INITIAL BOARD USING BFS ALGORITHM
+	/**
+	 *  FINDs A SOLUTION TO THE INITIAL BOARD USING BFS ALGORITHM
+	 *
+	 * @param initial		The Board to be solved
+	 */
 	public BFSSolver(Board initial) {
     	Queue<SearchNode> queue = new Queue<SearchNode>();
     	ArrayList<Board> explored = new ArrayList<Board>();
+
+    	time = System.currentTimeMillis();
     	
     	queue.enqueue(new SearchNode(initial, 0, null));    	
     	SearchNode sn = null;
-    	int count = 0;
     	while (!queue.isEmpty()) {
     		sn = queue.dequeue();
     		if (explored.contains(sn.board)) continue;
     		if (sn.board.isGoal()) break;
 			explored.add(sn.board);
-			count++;
+
+			expNodes++;
     		for (Board b: sn.board.neighbors()) {
     			if (!explored.contains(b))
     				queue.enqueue(new SearchNode(b, sn.moves + 1, sn));
     		}
     	} 
 
-    	System.out.println(count);
+
+    	if (queue.isEmpty()) {
+    		solvable = false;
+    		return;
+    	}
+    	
+    	time = System.currentTimeMillis() - time;
+    	
     	SearchNode prev = sn;
     	movements = new Stack<Action>();
     	
@@ -51,8 +64,17 @@ public class BFSSolver extends Solver{
     	solvable = true;
     }
 	
+
 	public boolean isSolvable() {
 		return solvable;
+	}
+
+	public long getRunningTime() {
+		return time;
+	}
+
+	public int expandedNodes() {
+		return expNodes;
 	}
 
 	public int moves() {

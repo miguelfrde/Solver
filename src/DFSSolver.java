@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import datastructures.Stack;
@@ -16,27 +17,43 @@ public class DFSSolver extends Solver{
 	    	this.previous = previous;
 	   	}
 	}
-			 
+			
+	/**
+	 *  FINDs A SOLUTION TO THE INITIAL BOARD USING DFS ALGORITHM
+	 *
+	 * @param initial		The Board to be solved
+	 */
 	public DFSSolver(Board initial) {
     	// find a solution to the initial board (using the DFS algorithm)
     	Stack<SearchNode> stack = new Stack<SearchNode>();
-    	Stack<Board> previous = new Stack<Board>();
+    	ArrayList<Board> explored = new ArrayList<Board>();
+
+    	time = System.currentTimeMillis();
     	
-    	stack.push(new SearchNode(initial, 0, null));
+    	stack.push(new SearchNode(initial, 0, null));    	
+    	SearchNode sn = null;
     	
-    	SearchNode sn = stack.pop();
-    	previous.push(sn.board);
-    	
-    	while (!sn.board.isGoal()) {
-    		for (Board b: sn.board.neighbors()) {
-    			if (!previous.contains(b)) {
-    				stack.push(new SearchNode(b, sn.moves + 1, sn));
-    				previous.push(b);
-    			}
-    		}
-    		
+    	while (!stack.isEmpty()) {
     		sn = stack.pop();
+    		if (explored.contains(sn.board)) continue;
+    		if (sn.board.isGoal()) break;
+    		
+    		explored.add(sn.board);
+			expNodes++;
+			
+    		for (Board b: sn.board.neighbors()) {
+    			if (!explored.contains(b))
+    				stack.push(new SearchNode(b, sn.moves + 1, sn));
+    		}
+    	} 
+    	
+
+    	if (stack.isEmpty()) {
+    		solvable = false;
+    		return;
     	}
+    	
+    	time = System.currentTimeMillis() - time;
     	
     	SearchNode prev = sn;
     	movements = new Stack<Action>();
@@ -48,7 +65,16 @@ public class DFSSolver extends Solver{
     	}
     	solvable = true;
     }
-	
+
+
+	public long getRunningTime() {
+		return time;
+	}
+
+	public int expandedNodes() {
+		return expNodes;
+	}
+
 	public boolean isSolvable() {
 		return solvable;
 	}

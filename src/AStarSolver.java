@@ -26,20 +26,27 @@ public class AStarSolver extends Solver{
     		else return 1;
 		}
     }
-		 
+	
+	/**
+	 *  FINDS A SOLUTION TO THE INITIAL BOARD USING A* ALGORITHM
+	 *
+	 * @param initial		The Board to be solved
+	 */
 	public AStarSolver(Board initial) {
     	MinPQ<SearchNode> pq = new MinPQ<SearchNode>();
     	ArrayList<Board> explored = new ArrayList<Board>();
-    	pq.insert(new SearchNode(initial, 0, null));
-    	int count = 0;
     	
+    	time = System.currentTimeMillis();
+    	
+    	pq.insert(new SearchNode(initial, 0, null));    	
     	SearchNode sn = null;
+    	
     	while (!pq.isEmpty()) {
     		sn = pq.delMin();  
     		if (explored.contains(sn.board)) continue;
     		if (sn.board.isGoal()) break;
 			explored.add(sn.board);
-			count++;
+			expNodes++;
     		for (Board b: sn.board.neighbors()) {
     			if (!explored.contains(b)) {
     				pq.insert(new SearchNode(b, sn.moves + 1, sn));
@@ -47,12 +54,13 @@ public class AStarSolver extends Solver{
     		}
     	} 
     	
+    	time = System.currentTimeMillis() - time;
+    	
     	if (pq.isEmpty()) {
     		solvable = false;
     		return;
     	}
     	
-    	System.out.println(count);
     	SearchNode prev = sn;
     	movements = new Stack<Action>();
     		
@@ -63,7 +71,15 @@ public class AStarSolver extends Solver{
     	}
     	solvable = true;
     }
-	
+
+	public long getRunningTime() {
+		return time;
+	}
+
+	public int expandedNodes() {
+		return expNodes;
+	}
+
 	public boolean isSolvable() {
 		return solvable;
 	}
