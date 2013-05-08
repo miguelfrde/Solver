@@ -20,8 +20,7 @@ public class BFSSolver extends Solver{
 	}
 			 
 	/**
-	 *  FINDs A SOLUTION TO THE INITIAL BOARD USING BFS ALGORITHM
-	 *
+	 *  Find the solution of the initial board using the BFS algorithm.
 	 * @param initial		The Board to be solved
 	 */
 	public BFSSolver(Board initial) {

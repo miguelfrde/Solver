@@ -19,8 +19,7 @@ public class DFSSolver extends Solver{
 	}
 			
 	/**
-	 *  FINDs A SOLUTION TO THE INITIAL BOARD USING DFS ALGORITHM
-	 *
+	 *  Find the solution of the initial board using the DFS algorithm.
 	 * @param initial		The Board to be solved
 	 */
 	public DFSSolver(Board initial) {

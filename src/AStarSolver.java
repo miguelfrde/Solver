@@ -28,8 +28,7 @@ public class AStarSolver extends Solver{
     }
 	
 	/**
-	 *  FINDS A SOLUTION TO THE INITIAL BOARD USING A* ALGORITHM
-	 *
+	 *  Find the solution of the initial board using the A* algorithm.	 *
 	 * @param initial		The Board to be solved
 	 */
 	public AStarSolver(Board initial) {

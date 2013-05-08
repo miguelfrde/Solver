@@ -9,25 +9,25 @@ public abstract class Solver {
 	protected long time = 0;
 		
 	/**
-	 *  CHECKS WHETHER THE PUZZLE IS SOLVABLE OR NOT
+	 *  Check whether the puzzle is solvable or not
 	 *  @return true if the Board is solvable.
 	 */
 	protected abstract boolean isSolvable();
 
 	/**
-	 *  GETS THE NUMBER OF MOVES IN THE SOLUTION
+	 *  Get the number of moves in the solution
 	 *  @return The number of moves in the solution
 	 */
 	protected abstract int moves();
 	
 	/**
-	 *  GETS THE AMOUNT OF EXPANDED NODES
+	 *  Get the amount of expanded nodes
 	 *  @return The amount of expanded nodes
 	 */
 	protected abstract int expandedNodes();
 	
 	/**
-	 *  GETS THE TIME TOOK BY THE ALGORITHM TO SOLVE THE PUZZLE
+	 *  Get the time took by the algorithm to solve the puzzle
 	 *  @return The running time of the Solver
 	 */	
     protected abstract long getRunningTime();
@@ -35,7 +35,7 @@ public abstract class Solver {
 
 
 	/**
-	 *  GETS THE SOLUTION TO THE SOLVER
+	 *  Gets the solution to the solver
 	 *  @return An iterable<Action> with the solution to the puzzle
 	 */
     protected abstract Iterable<Action> solution();
