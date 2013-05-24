@@ -38,8 +38,8 @@ public class DFSSolver extends Solver{
     		if (sn.board.isGoal()) break;
     		
     		explored.add(sn.board);
+    		
 			expNodes++;
-			
     		for (Board b: sn.board.neighbors()) {
     			if (!explored.contains(b))
     				stack.push(new SearchNode(b, sn.moves + 1, sn));
@@ -88,16 +88,12 @@ public class DFSSolver extends Solver{
 	}
 	
 	public static void main(String[] args) {
-		 // create initial board from file
-		File file = new File("C:\\Users\\JORGE\\workspace\\Solver\\puzzles\\" + args[0]);
+		File file = new File("puzzles/Beginner-02.puzzle");
 		
 		Scanner in = null;
 		try {
 			in = new Scanner(file);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (FileNotFoundException e) {}
 		
 		in.next();
 		
@@ -106,16 +102,10 @@ public class DFSSolver extends Solver{
         for (int i = 0; i < N; i++)
             for (int j = 0; j < N; j++)
                 blocks[i][j] = in.next().charAt(0);
-        
-
         Board initial = new Board(blocks);
-        
-        // solve the puzzle
-        DFSSolver solver = new DFSSolver(initial);
-
-        // print solution to standard output       
+      
+        DFSSolver solver = new DFSSolver(initial);      
         System.out.println("Minimum number of moves = " + solver.moves());
-        
         for (Action a: solver.solution())
         	System.out.println(a);
 	}
